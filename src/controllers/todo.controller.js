@@ -74,8 +74,8 @@ export const editParticularTodo = async (req, res) => {
     const userTodo = req.todoList;
 
     Object.keys(req.body).map((element) => {
-        if (userTodo[`${element}`]) {
-            userTodo[`${element}`] = req.body[`${element}`];
+        if (userTodo[element] || element === 'completed') {
+            userTodo[element] = req.body[element];
         }
     });
 
