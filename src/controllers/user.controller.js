@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import moment from "moment-timezone";
 import genToken from "../utilities/gentoken.js";
-import { addUser, findUserByMail } from "../services/user.service.js";
+import { addUser, findUserById, findUserByMail } from "../services/user.service.js";
 
 /**
  * API POST '/sign-in'
@@ -67,6 +67,14 @@ export const loginUser = async (req, res) => {
  * @param {*} res 
  */
 export const logoutUser = async (req, res) => {
+    res.cookie('jwt', '', {
+        expires: new Date(0),
+        httpOnly: true,
+    })
+    res.status(200).json({
+        data: '',
+        message: 'logged out'
+    });
 }
 
 
@@ -76,4 +84,15 @@ export const logoutUser = async (req, res) => {
  * @param {*} res 
  */
 export const profileOfUser = async (req, res) => {
+    const decoded = jwt.verify(req.cookies.jwt, process.env.PRIVATE_KEY);
+    const user = await findUserById(decoded.userId);
+
+    if (!user) {
+        res.status(404)
+        throw new Error(`User doesn't exits`)
+    }
+    res.status(200).json({
+        data: user,
+        message: 'profile information fetched successfully'
+    });
 }
