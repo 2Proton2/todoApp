@@ -4,15 +4,20 @@ import { viewPermission } from "../permission/view.permission.js"
 
 export const getTheTodo = async (req, res, next) => {
     const todoListId = req.params.id;
-    const todoList = await Todo.findTodoById(todoListId);
+    const todoList = await findTodoById(todoListId);
 
-    //protecting the todoLists from other users
-    const permission = viewPermission(req.user._id, todoList.user)
-
-    if (!permission) {
-        res.status(401);
-        throw new Error('Not Allowed');
+    if (todoList) {
+        //protecting the todoLists from other users
+        const permission = viewPermission(req.user._id, todoList.user)
+    
+        if (!permission) {
+            res.status(401);
+            throw new Error('Not Allowed');
+        }
+        req['todoList'] = todoList;
+        next();
+    } else {
+        res.status(404);
+        throw new Error(`Resource not found`);
     }
-    req['todoList'] = todoList;
-    next();
 }
