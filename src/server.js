@@ -5,6 +5,7 @@ import userRoute from './routes/user.route.js';
 import todoRoute from './routes/todo.route.js';
 import { connectDB } from './config/db.config.js';
 import cronManager from "./utilities/cronManager.js";
+import mongoose from 'mongoose';
 dotenv.config({path: '.env'});
 const PORT = process.env.PORT;
 import { notFound, errorHandler } from './middlewares/errorHandler.middlerware.js';
@@ -37,4 +38,37 @@ const cronInstance = new cronManager();
 
 const server = app.listen(PORT, () => {
     console.log(`Server is listening at [${PORT}]`);
+})
+
+/**
+ * closing the connection manually
+ */
+process.on('SIGINT', () => {
+    server.close(async () => {
+        try {
+            console.log(`Webapp-server shutting down.`)
+            await mongoose.connection.close();
+            console.log(`Database connection closed`);
+            process.exit(0);
+        } catch (error) {
+            console.log(`Error occured while closing the database : ${error}`);
+            
+        }
+    })
+})
+
+/**
+ * server crashed due to some error
+ */
+process.on('SIGTERM', () => {
+    server.close(async () => {
+        try {
+            console.log(`Webapp-server forcefully closed due to some error.`);
+            await mongoose.connection.close();
+            console.log(`Database connection closed`);
+            process.exit(0);
+        } catch (error) {
+            console.log(`Error occured while closing the database : ${error}`);
+        }
+    })
 })
