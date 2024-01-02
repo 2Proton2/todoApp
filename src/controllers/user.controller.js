@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import moment from "moment-timezone";
 import genToken from "../utilities/gentoken.js";
+import { addUser, findUserByMail } from "../services/user.service.js";
 
 /**
  * API POST '/sign-in'
@@ -12,13 +13,13 @@ import genToken from "../utilities/gentoken.js";
 export const signUser = async (req, res) => {
     const { email, password } = req.body;
 
-    const userExists = await User.findOne({ email });
+    const userExists = await findUserByMail(email);
 
     if (userExists) {
         throw new Error(`User already exists`);
     }
 
-    const userInstance = await User.create({ email, password });
+    const userInstance = await addUser(email, password);
 
     if (userInstance) {
         genToken(res, userInstance._id);
@@ -31,6 +32,7 @@ export const signUser = async (req, res) => {
         });
     }
     else{
+        res.status(400)
         throw new Error(`Error while registering the user`);
     }
 }
@@ -41,6 +43,22 @@ export const signUser = async (req, res) => {
  * @param {*} res 
  */
 export const loginUser = async (req, res) => {
+    const { email, password } = req.body;
+    const user = await findUserByMail(email);
+
+    if(user && (await user.matchPassword(password))) {
+        genToken(res, user._id)
+        res.status(200).json({
+            data: {
+                _id: user._id,
+                email: user.email
+            },
+            message: 'logged in'
+        });
+    } else {
+        res.status(401);
+        throw new Error(`Invalid email or Incorrect Password`);
+    }
 }
 
 /**
