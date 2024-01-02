@@ -1,9 +1,6 @@
 import { Todo } from "../models/todo.model.js";
 import { findTodoById } from '../services/todo.service.js';
-
-const viewPermission = (requestUser, todoUser) => {
-    return requestUser.toString() === todoUser.toString()
-}
+import { viewPermission } from "../permission/view.permission.js"
 
 export const getTheTodo = async (req, res, next) => {
     const todoListId = req.params.id;
