@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import userRoute from './routes/user.route.js';
 import todoRoute from './routes/todo.route.js';
 import { connectDB } from './config/db.config.js';
+import cronManager from "./utilities/cronManager.js";
 dotenv.config({path: '.env'});
 const PORT = process.env.PORT;
 import { notFound, errorHandler } from './middlewares/errorHandler.middlerware.js';
@@ -30,6 +31,9 @@ app.use('/api/todo', todoRoute);
  */
 app.use(notFound);
 app.use(errorHandler);
+
+// Initialize the CronManager
+const cronInstance = new cronManager();
 
 const server = app.listen(PORT, () => {
     console.log(`Server is listening at [${PORT}]`);
