@@ -21,7 +21,9 @@
     "jsonwebtoken": "^9.0.2",
     "moment-timezone": "^0.5.44",
     "mongoose": "^8.0.3",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
