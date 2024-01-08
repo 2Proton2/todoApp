@@ -6,6 +6,7 @@ import todoRoute from './routes/todo.route.js';
 import { connectDB } from './config/db.config.js';
 import cronManager from "./utilities/cronManager.js";
 import mongoose from 'mongoose';
+import swaggerConfig from './config/swagger.config.js';
 dotenv.config({path: '.env'});
 const PORT = process.env.PORT;
 import { notFound, errorHandler } from './middlewares/errorHandler.middlerware.js';
@@ -26,6 +27,7 @@ app.use(cookieParser());
  */
 app.use('/api/user', userRoute);
 app.use('/api/todo', todoRoute);
+swaggerConfig(app, process.env.PORT)
 
 /**
  * errorhandler
